@@ -72,6 +72,15 @@ exports.get = async (req, res) => {
           audio: 'https://p.scdn.co/mp3-preview/293edc4384311f86fa6151d3f1a4b4a3af87211b?cid=15cdb78eb98a4db0a7ebc1cef528a214',
           artist: '  ',
         },
+        {
+          _id: 'out',
+          date: 123,
+          isoDate: '123',
+          title: 'Check back soon for more songs',
+          photo: 'https://torange.biz/photofx/179/10/street-wall-art-house-picture-stylish-abstract-youth-179004.jpg',
+          audio: 'https://p.scdn.co/mp3-preview/293edc4384311f86fa6151d3f1a4b4a3af87211b?cid=15cdb78eb98a4db0a7ebc1cef528a214',
+          artist: '  ',
+        },
       ];
     }
     res.status(200).json(songs);

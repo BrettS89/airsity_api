@@ -4,6 +4,6 @@ const playlist = require('../controllers/playlist');
 
 router.post('/add', playlist.add);
 
-router.get('/get/:genre', playlist.get);
+router.get('/get/:genre/:date', playlist.get);
 
 module.exports = router;

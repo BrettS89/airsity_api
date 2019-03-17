@@ -27,11 +27,9 @@ exports.add = async (req, res) => {
 
 // get unlistened to songs //
 exports.get = async (req, res) => {
-  console.log('ayo');
   const genre = req.params.genre === 'hiphop' ? 'Hip hop' : req.params.genre;
   try {
     const { user, token } = await auth.verifyToken(req);
-    console.log(user, genre);
     let songs = await Song.aggregate([
       {
         '$match': { 'genre': { '$eq': genre } }
@@ -59,7 +57,7 @@ exports.get = async (req, res) => {
         '$match': { 'listenedArray': { '$eq': [] } }
       },
     ])
-    .sort({ year: 'desc' })
+    .sort({ releaseDate: 'desc' })
     .limit(50)
     .exec();
 
@@ -74,7 +72,6 @@ exports.get = async (req, res) => {
         },
       ];
     }
-
     res.status(200).json(songs);
   }
 
@@ -85,12 +82,11 @@ exports.get = async (req, res) => {
 };
 
 exports.getNonMember = async (req, res) => {
-  
   try {
     const genre = req.params.genre === 'hiphop' ? 'Hip hop' : req.params.genre;
     const songs = await Song.find({ genre })
-      .sort({ year: 'desc' })
-      .limit(50)
+      .sort({ releaseDate: 'desc' })
+      .limit(15)
       .exec();
     res.status(200).json(songs);
   }

@@ -11,7 +11,7 @@ exports.add = async (req, res) => {
     const { user, token } = await auth.verifyToken(req);
     const playlistTrack = new Playlist({
       date: req.body.date,
-      isoDate: 'iso',
+      isoDate: req.body.isoDate,
       song: req.body.song,
       genre: req.body.genre,
       user: user._id,
@@ -19,7 +19,7 @@ exports.add = async (req, res) => {
 
     const listened = new Listened({
       date: req.body.date,
-      isoDate: 'test',
+      isoDate: req.body.isoDate,
       song: req.body.song,
       genre: req.body.genre,
       user: user._id,
@@ -43,16 +43,17 @@ exports.get = async (req, res) => {
     const genre = req.params.genre === 'hiphop' ? 'Hip hop' : req.params.genre;
     let playlist;
     if (req.params.genre === 'all') {
-      playlist = await Playlist.find({ user: user._id })
+      playlist = await Playlist.find({ user: user._id, date: { $lt: req.params.date } })
         .sort({ date: 'desc' })
         .populate('song', ['_id', 'title', 'artist', 'album', 'photo', 'genre', 'audio', 'year'])
+        .limit(30)
         .lean()
         .exec();
     } else {
-      playlist = await Playlist.find({ user: user._id, genre })
+      playlist = await Playlist.find({ user: user._id, genre, date: { $lt: req.params.date } })
         .sort({ date: 'desc' })
         .populate('song', ['_id', 'title', 'artist', 'album', 'photo', 'genre', 'audio', 'year'])
-        .limit(50)
+        .limit(30)
         .lean()
         .exec();
     }

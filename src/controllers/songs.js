@@ -27,7 +27,7 @@ exports.add = async (req, res) => {
 
 // get unlistened to songs //
 exports.get = async (req, res) => {
-  const genre = req.params.genre === 'hiphop' ? 'Hip hop' : req.params.genre;
+  const genre = req.params.genre;
   try {
     const { user, token } = await auth.verifyToken(req);
     let songs = await Song.aggregate([

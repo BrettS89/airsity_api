@@ -40,7 +40,7 @@ exports.add = async (req, res) => {
 exports.get = async (req, res) => {
   try {
     const { user, token } = await auth.verifyToken(req);
-    const genre = req.params.genre === 'hiphop' ? 'Hip hop' : req.params.genre;
+    const genre = req.params.genre;
     let playlist;
     if (req.params.genre === 'all') {
       playlist = await Playlist.find({ user: user._id, date: { $lt: req.params.date } })

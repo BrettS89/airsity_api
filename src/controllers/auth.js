@@ -6,19 +6,16 @@ const auth = require('../services/authService');
 
 exports.signup = async (req, res) => {
   try {
-    const newUser = new User({
-      date: req.body.date,
-      isoDate: req.body.isoDate,
-      email: req.body.email,
-      password: bcrypt.hashSync(req.body.password, 10),
-    });
-
+    const { email, date, isoDate, firstName, password } = req.body;
+    const existingUser = await User.findOne({ email });
+    if (existingUser) throw new Error('User exists');
+    if (!email || !date || !isoDate || !password || !firstName) {
+      throw new Error('Did not provide all fields');
+    }
+    const hashedPassword = bcrypt.hashSync(password, 10);
+    const newUser = new User({ firstName, date, isoDate, email, password: hashedPassword });
     const savedUser = await newUser.save();
-
-    const userId = {
-      _id: savedUser._id,
-    };
-
+    const userId = { _id: savedUser._id };
     const token = jwt.sign({ user: userId }, keys.secret);
     res.status(200).json({ status: 'success', token });
   }
@@ -60,6 +57,6 @@ exports.isLoggedIn = async (req, res) => {
   }
 
   catch(e) {
-    res.status(200).json({ status: false });
+    res.status(500).json({ error: 'not authenticated' });
   }
 };

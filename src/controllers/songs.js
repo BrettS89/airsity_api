@@ -31,7 +31,7 @@ exports.get = async (req, res) => {
     const { user, token } = await auth.verifyToken(req);
     let songs = await Song.aggregate([
       {
-        '$match': { 'genre': genre }
+        '$match': { 'genre': { '$eq': genre } }
       },
       {
         '$lookup': {

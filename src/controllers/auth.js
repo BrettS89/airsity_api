@@ -21,6 +21,7 @@ exports.signup = async (req, res) => {
     const token = jwt.sign({ user: userId }, keys.secret);
     res.status(200).json({ status: 'success', token });
     twilio.signupSMS(firstName);
+    mixpanel.track('signup', savedUser._id);
   }
 
   catch(e) {

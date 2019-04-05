@@ -14,8 +14,9 @@ exports.add = async (req, res) => {
     const playlistTrack = new Playlist({ date, isoDate, song, genre, user: user._id });
     const listened = new Listened({ date, isoDate, song, genre, user: user._id });
     await listened.save();
-    await playlistTrack.save();
-    res.status(200).json({ status: 'success' });
+    let playlistRecord = await playlistTrack.save();
+    const fullRecord = await Playlist.populate(playlistRecord, { path: 'song' });
+    res.status(200).json(fullRecord);
     mixpanel.trackListen('listen', req.body.genre, user._id, 'add');
   }
 

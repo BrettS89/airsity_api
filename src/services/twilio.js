@@ -4,7 +4,6 @@ const keys = require('../config');
 const client = new twilio(keys.twilioAccountSid, keys.twilioAuthToken);
 
 exports.signupSMS = (name) => {
-  console.log(name)
   const body = `New Airsity signup! ${name} just joined`;
   if (keys.environment === 'production') {
     try {

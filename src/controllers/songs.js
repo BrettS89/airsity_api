@@ -58,7 +58,6 @@ exports.get = async (req, res) => {
     ])
     .sort({ releaseDate: 'desc' })
     .limit(50)
-    .lean()
     .exec();
     if (songs.length === 0) {
       songs = [

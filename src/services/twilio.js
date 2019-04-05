@@ -11,6 +11,6 @@ exports.signupSMS = (name) => {
       client.messages.create({ body, to: '+16098024463', from: '+12679145215' });
     } catch(e) {
       console.log(e);
-    } 
+    }
   }
 };

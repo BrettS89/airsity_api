@@ -10,22 +10,9 @@ exports.add = async (req, res) => {
       return res.status(200).json({ status: 'out of songs' });
     }
     const { user, token } = await auth.verifyToken(req);
-    const playlistTrack = new Playlist({
-      date: req.body.date,
-      isoDate: req.body.isoDate,
-      song: req.body.song,
-      genre: req.body.genre,
-      user: user._id,
-    });
-
-    const listened = new Listened({
-      date: req.body.date,
-      isoDate: req.body.isoDate,
-      song: req.body.song,
-      genre: req.body.genre,
-      user: user._id,
-    });
-
+    const { date, isoDate, song, genre } = req.body;
+    const playlistTrack = new Playlist({ date, isoDate, song, genre, user: user._id });
+    const listened = new Listened({ date, isoDate, song, genre, user: user._id });
     await listened.save();
     await playlistTrack.save();
     res.status(200).json({ status: 'success' });

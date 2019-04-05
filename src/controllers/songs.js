@@ -1,5 +1,4 @@
 const Song = require('../models/Song');
-const Listened = require('../models/Listened');
 const auth = require('../services/authService');
 
 // add a new song //
@@ -32,7 +31,7 @@ exports.get = async (req, res) => {
     const { user, token } = await auth.verifyToken(req);
     let songs = await Song.aggregate([
       {
-        '$match': { 'genre': { '$eq': genre } }
+        '$match': { 'genre': genre }
       },
       {
         '$lookup': {
@@ -60,7 +59,6 @@ exports.get = async (req, res) => {
     .sort({ releaseDate: 'desc' })
     .limit(50)
     .exec();
-
     if (songs.length === 0) {
       songs = [
         {

@@ -3,6 +3,7 @@ const keys = require('../config');
 const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 const auth = require('../services/authService');
+const mixpanel = require('../services/mixpanel');
 
 exports.signup = async (req, res) => {
   try {
@@ -53,7 +54,8 @@ exports.login = async (req, res) => {
 exports.isLoggedIn = async (req, res) => {
   try {
     const { user, token } = await auth.verifyToken(req);
-    res.status(200).json({ status: true })
+    res.status(200).json({ status: true });
+    mixpanel.track('login', user._id);
   }
 
   catch(e) {

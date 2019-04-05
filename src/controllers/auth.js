@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 const auth = require('../services/authService');
 const mixpanel = require('../services/mixpanel');
+const twilio = require('../services/twilio');
 
 exports.signup = async (req, res) => {
   try {
@@ -19,6 +20,8 @@ exports.signup = async (req, res) => {
     const userId = { _id: savedUser._id };
     const token = jwt.sign({ user: userId }, keys.secret);
     res.status(200).json({ status: 'success', token });
+    twilio.signupSMS(firstName);
+    mixpanel.track('signup', savedUser._id);
   }
 
   catch(e) {

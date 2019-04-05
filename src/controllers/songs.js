@@ -1,5 +1,4 @@
 const Song = require('../models/Song');
-const Listened = require('../models/Listened');
 const auth = require('../services/authService');
 
 // add a new song //
@@ -60,7 +59,6 @@ exports.get = async (req, res) => {
     .sort({ releaseDate: 'desc' })
     .limit(50)
     .exec();
-
     if (songs.length === 0) {
       songs = [
         {

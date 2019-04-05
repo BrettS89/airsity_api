@@ -1,6 +1,7 @@
 const Playlist = require('../models/Playlist');
 const Listened = require('../models/Listened');
 const auth = require('../services/authService');
+const mixpanel = require('../services/mixpanel');
 
 // add a song to your playlist //
 exports.add = async (req, res) => {
@@ -28,6 +29,7 @@ exports.add = async (req, res) => {
     await listened.save();
     await playlistTrack.save();
     res.status(200).json({ status: 'success' });
+    mixpanel.trackListen('listen', req.body.genre, user._id, 'add');
   }
 
   catch(e) {

@@ -52,7 +52,7 @@ exports.login = async (req, res) => {
 
 exports.facebookAuth = async (req, res) => {
   try {
-    const { email, id, name } = req.body;
+    const { email, id, name, date, isoDate } = req.body;
     const foundUser = await User.findOne({ email });
     if (foundUser) {
       const userId = { _id: foundUser._id };
@@ -60,7 +60,7 @@ exports.facebookAuth = async (req, res) => {
       res.status(200).json({ status: 'success', token });
     } else {
       const newUser = new User({ 
-        firstName: name, date, isoDate, email, password: bcrypt.hashSync(id)
+        firstName: name.split(' ')[0], date, isoDate, email, password: bcrypt.hashSync(id)
       });
       const savedUser = await newUser.save();
       const userId = { _id: savedUser._id };
@@ -72,6 +72,7 @@ exports.facebookAuth = async (req, res) => {
   }
 
   catch(e) {
+    console.log(e);
     res.status(500).json({ error: 'an error occured' });
   }
 };

@@ -50,6 +50,33 @@ exports.login = async (req, res) => {
   }
 };
 
+exports.facebookAuth = async (req, res) => {
+  try {
+    const { email, id, name, date, isoDate } = req.body;
+    const foundUser = await User.findOne({ email });
+    if (foundUser) {
+      const userId = { _id: foundUser._id };
+      const token = jwt.sign({ user: userId }, keys.secret);
+      res.status(200).json({ status: 'success', token });
+    } else {
+      const newUser = new User({ 
+        firstName: name.split(' ')[0], date, isoDate, email, password: bcrypt.hashSync(id)
+      });
+      const savedUser = await newUser.save();
+      const userId = { _id: savedUser._id };
+      const token = jwt.sign({ user: userId }, keys.secret);
+      res.status(200).json({ status: 'success', token });
+      twilio.signupSMS(firstName);
+      mixpanel.track('facebookSignup', savedUser._id);
+    }
+  }
+
+  catch(e) {
+    console.log(e);
+    res.status(500).json({ error: 'an error occured' });
+  }
+};
+
 exports.isLoggedIn = async (req, res) => {
   try {
     const { user, token } = await auth.verifyToken(req);

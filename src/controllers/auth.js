@@ -86,5 +86,6 @@ exports.isLoggedIn = async (req, res) => {
 
   catch(e) {
     res.status(500).json({ error: 'not authenticated' });
+    mixpanel.track('firstOpen', user._id);
   }
 };

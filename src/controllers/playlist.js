@@ -1,5 +1,6 @@
 const Playlist = require('../models/Playlist');
 const Listened = require('../models/Listened');
+const Song = require('../models/Song');
 const auth = require('../services/authService');
 const mixpanel = require('../services/mixpanel');
 
@@ -17,6 +18,9 @@ exports.add = async (req, res) => {
     let playlistRecord = await playlistTrack.save();
     const fullRecord = await Playlist.populate(playlistRecord, { path: 'song' });
     res.status(200).json(fullRecord);
+    const s = await Song.findById(song);
+    s.playlistAdds = s.playlistAdds ? s.playlistAdds + 1 : 1;
+    await s.save();
     mixpanel.trackListen('listen', req.body.genre, user._id, 'add');
   }
 
@@ -54,5 +58,19 @@ exports.get = async (req, res) => {
   catch(e) {
     console.log('get playlist error:', e);
     res.status(500).json({ error: 'an error occured' });
+  }
+};
+
+exports.play = async (req, res) => {
+  try {
+    const { user, token } = await auth.verifyToken(req);
+    mixpanel.trackPlaylistPlay('playlistPlay', req.params.genre, user._id);
+    res.status(200).json({ status: 'success' });
+  } 
+  
+  catch(e) {
+    console.log('trackPlay error: ', e);
+    res.status(500).json({ error: 'an error occured' });
+    mixpanel.trackPlaylistPlay('playlistPlay', req.params.genre, user._id);
   }
 };

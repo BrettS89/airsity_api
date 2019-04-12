@@ -15,6 +15,7 @@ const songSchema = new mongoose.Schema({
   year: { type: Number },
   spotifyId: { type: String },
   openInSpotify: { type: String },
+  playlistAdds: { type: Number },
 });
 
 module.exports = mongoose.model('Song', songSchema);

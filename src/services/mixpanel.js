@@ -24,3 +24,12 @@ exports.trackListen = (event, genre, id, action) => {
     });
   }
 };
+
+exports.trackPlaylistPlay = (event, genre, id) => {
+  if (!ourIds.includes(id)) {
+    mixpanel.track(event, {
+      distinct_id: id,
+      genre,
+    });
+  }
+};

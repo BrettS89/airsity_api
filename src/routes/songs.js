@@ -4,7 +4,9 @@ const router = express.Router();
 
 router.post('/add', songs.add);
 
-router.get('/get/:genre', songs.get);
+router.get('/get/:genre', songs.getOld);
+
+router.get('/get/:genre/:sort', songs.get);
 
 router.get('/getnoauth/:genre', songs.getNonMember);
 

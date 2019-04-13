@@ -8,7 +8,7 @@ const mixpanel = Mixpanel.init(keys.mixpanelToken, {
 });
 
 exports.track = (event, id) => {
-  if (!ourIds.includes(id)) {
+  if (!ourIds.includes(id) && keys.environment === 'production') {
     mixpanel.track(event, {
       distinct_id: id,
     });
@@ -16,11 +16,20 @@ exports.track = (event, id) => {
 };
 
 exports.trackListen = (event, genre, id, action) => {
-  if (!ourIds.includes(id)) {
+  if (!ourIds.includes(id) && keys.environment === 'production') {
     mixpanel.track(event, {
       distinct_id: id,
       genre,
       action,
+    });
+  }
+};
+
+exports.trackPlaylistPlay = async (event, genre, id) => {
+  if (!ourIds.includes(id) && keys.environment === 'production') {
+    mixpanel.track(event, {
+      distinct_id: id,
+      genre,
     });
   }
 };

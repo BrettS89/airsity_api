@@ -1,7 +1,7 @@
 const Mixpanel = require('mixpanel');
 const keys = require('../config');
 
-const ourIds = ['5ca384ccf28c230017f763e6', '5bcd279bc0e7160013a6abf7'];
+const ourIds = ['5ca384ccf28c230017f763e6', '5cb2941be3a7ac00177714e3'];
 
 const mixpanel = Mixpanel.init(keys.mixpanelToken, {
   protocol: 'https'

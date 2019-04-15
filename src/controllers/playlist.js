@@ -1,6 +1,8 @@
 const Playlist = require('../models/Playlist');
 const Listened = require('../models/Listened');
+const Song = require('../models/Song');
 const auth = require('../services/authService');
+const mixpanel = require('../services/mixpanel');
 
 // add a song to your playlist //
 exports.add = async (req, res) => {
@@ -9,25 +11,17 @@ exports.add = async (req, res) => {
       return res.status(200).json({ status: 'out of songs' });
     }
     const { user, token } = await auth.verifyToken(req);
-    const playlistTrack = new Playlist({
-      date: req.body.date,
-      isoDate: req.body.isoDate,
-      song: req.body.song,
-      genre: req.body.genre,
-      user: user._id,
-    });
-
-    const listened = new Listened({
-      date: req.body.date,
-      isoDate: req.body.isoDate,
-      song: req.body.song,
-      genre: req.body.genre,
-      user: user._id,
-    });
-
+    const { date, isoDate, song, genre } = req.body;
+    const playlistTrack = new Playlist({ date, isoDate, song, genre, user: user._id });
+    const listened = new Listened({ date, isoDate, song, genre, user: user._id });
     await listened.save();
-    await playlistTrack.save();
-    res.status(200).json({ status: 'success' });
+    let playlistRecord = await playlistTrack.save();
+    const fullRecord = await Playlist.populate(playlistRecord, { path: 'song' });
+    res.status(200).json(fullRecord);
+    const s = await Song.findById(song);
+    s.playlistAdds = s.playlistAdds ? s.playlistAdds + 1 : 1;
+    await s.save();
+    mixpanel.trackListen('listen', req.body.genre, user._id, 'add');
   }
 
   catch(e) {
@@ -40,7 +34,7 @@ exports.add = async (req, res) => {
 exports.get = async (req, res) => {
   try {
     const { user, token } = await auth.verifyToken(req);
-    const genre = req.params.genre === 'hiphop' ? 'Hip hop' : req.params.genre;
+    const genre = req.params.genre;
     let playlist;
     if (req.params.genre === 'all') {
       playlist = await Playlist.find({ user: user._id, date: { $lt: req.params.date } })
@@ -64,5 +58,19 @@ exports.get = async (req, res) => {
   catch(e) {
     console.log('get playlist error:', e);
     res.status(500).json({ error: 'an error occured' });
+  }
+};
+
+exports.play = async (req, res) => {
+  try {
+    const { user, token } = await auth.verifyToken(req);
+    mixpanel.trackPlaylistPlay('playlistPlay', req.params.genre, user._id);
+    res.status(200).json({ status: 'success' });
+  } 
+  
+  catch(e) {
+    console.log('trackPlay error: ', e);
+    res.status(500).json({ error: 'an error occured' });
+    mixpanel.trackPlaylistPlay('playlistPlay', req.params.genre, user._id);
   }
 };

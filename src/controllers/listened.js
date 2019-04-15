@@ -1,5 +1,7 @@
 const Listened = require('../models/Listened');
+const Song = require('../models/Song');
 const auth = require('../services/authService');
+const mixpanel = require('../services/mixpanel');
 
 // create a listened record for a song //
 exports.add = async (req, res) => {
@@ -17,6 +19,9 @@ exports.add = async (req, res) => {
 
     await listened.save();
     res.status(200).json({ status: 'success' });
+    
+    const song = await Song.findById(req.body.song);
+    mixpanel.trackListen('listen', song.genre, user._id, 'dismiss');
   }
 
   catch(e) {

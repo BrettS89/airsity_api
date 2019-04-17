@@ -39,7 +39,7 @@ exports.login = async (req, res) => {
       }
       const userId = { _id: user._id };
       const token = jwt.sign({ user: userId }, keys.secret);
-      return res.status(200).json({ status: 'success', token });
+      return res.status(200).json({ status: 'success', token, streamingService: user.streamingService });
     }
     res.status(404).json({ error: 'no user was found' });
   }
@@ -57,7 +57,7 @@ exports.facebookAuth = async (req, res) => {
     if (foundUser) {
       const userId = { _id: foundUser._id };
       const token = jwt.sign({ user: userId }, keys.secret);
-      res.status(200).json({ status: 'success', token });
+      res.status(200).json({ status: 'success', token, streamingService: foundUser.streamingService });
     } else {
       const newUser = new User({ 
         firstName: name.split(' ')[0], date, isoDate, email, password: bcrypt.hashSync(id)
@@ -77,15 +77,30 @@ exports.facebookAuth = async (req, res) => {
   }
 };
 
+exports.setStreamingService = async (req, res) => {
+  try {
+    const { user, token } = await auth.verifyToken(req);
+    const foundUser = await User.findById(user._id);
+    foundUser.streamingService = req.body.streamingService;
+    const savedUser = await foundUser.save();
+    res.status(200).json({ streamingService: savedUser.streamingService });
+  }
+
+  catch(e) {
+    res.status(500).json({ error: 'an error occured' });
+    console.log('Set streaming service error: ', e);
+  }
+};
+
 exports.isLoggedIn = async (req, res) => {
   try {
     const { user, token } = await auth.verifyToken(req);
-    res.status(200).json({ status: true });
+    const foundUser = await User.findOne(user._id);
+    res.status(200).json({ status: true, streamingService: foundUser.streamingService });
     mixpanel.track('login', user._id);
   }
 
   catch(e) {
     res.status(500).json({ error: 'not authenticated' });
-    mixpanel.track('firstOpen', 'notUnique');
   }
 };

@@ -8,6 +8,8 @@ router.post('/login', auth.login);
 
 router.post('/facebook', auth.facebookAuth);
 
+router.post('/setstreaming', auth.setStreamingService);
+
 router.get('/isloggedin', auth.isLoggedIn);
 
 module.exports = router;

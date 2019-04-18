@@ -95,8 +95,9 @@ exports.setStreamingService = async (req, res) => {
 exports.isLoggedIn = async (req, res) => {
   try {
     const { user, token } = await auth.verifyToken(req);
-    const foundUser = await User.findOne(user._id);
-    res.status(200).json({ status: true, streamingService: foundUser.streamingService });
+    const foundUser = await User.findById(user._id);
+    const streamingService = foundUser.streamingService ? foundUser.streamingService : false;
+    res.status(200).json({ status: true, streamingService });
     mixpanel.track('login', user._id);
   }
 

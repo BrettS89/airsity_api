@@ -65,7 +65,7 @@ exports.facebookAuth = async (req, res) => {
       const savedUser = await newUser.save();
       const userId = { _id: savedUser._id };
       const token = jwt.sign({ user: userId }, keys.secret);
-      res.status(200).json({ status: 'success', token });
+      res.status(200).json({ status: 'success', token, streamingService: savedUser.streamingService });
       twilio.signupSMS(name.split(' ')[0]);
       mixpanel.track('facebookSignup', savedUser._id);
     }

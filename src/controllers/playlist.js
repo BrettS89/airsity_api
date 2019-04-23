@@ -39,14 +39,14 @@ exports.get = async (req, res) => {
     if (req.params.genre === 'all') {
       playlist = await Playlist.find({ user: user._id, date: { $lt: req.params.date } })
         .sort({ date: 'desc' })
-        .populate('song', ['_id', 'title', 'artist', 'album', 'photo', 'genre', 'audio', 'year'])
+        .populate('song', ['_id', 'title', 'artist', 'album', 'photo', 'genre', 'audio', 'year', 'openInSpotify'])
         .limit(30)
         .lean()
         .exec();
     } else {
       playlist = await Playlist.find({ user: user._id, genre, date: { $lt: req.params.date } })
         .sort({ date: 'desc' })
-        .populate('song', ['_id', 'title', 'artist', 'album', 'photo', 'genre', 'audio', 'year'])
+        .populate('song', ['_id', 'title', 'artist', 'album', 'photo', 'genre', 'audio', 'year', 'openInSpotify'])
         .limit(30)
         .lean()
         .exec();

@@ -30,6 +30,21 @@ exports.verifyToken = async (req) => {
   return { user: decodedUser.user, token };
 };
 
+exports.verifyTokenAdmin = async (req) => {
+  const receivedToken = req.header('authorization');
+  if(!receivedToken)
+    throw { error: 'Unauthorized', status: 401 }; 
+
+  await jwt.verify(receivedToken, keys.secret);
+  const decodedUser = jwt.decode(receivedToken);
+
+  if(decodedUser === null)
+    throw { error: 'Unauthorized', status: 401 };
+
+  const token = jwt.sign({ user: decodedUser.user }, keys.secret, { expiresIn: 28800 });
+  return { user: decodedUser.user, token };
+};
+
 // handle errors //
 exports.handleError = (e, res) => {
   if(!e.status) {

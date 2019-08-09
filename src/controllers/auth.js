@@ -105,3 +105,26 @@ exports.isLoggedIn = async (req, res) => {
     res.status(500).json({ error: 'not authenticated' });
   }
 };
+
+exports.adminLogin = async (req, res) => {
+  try {
+    const user = await User.findOne({ email: req.body.email });
+    console.log(user);
+    if(user) {
+      if (!bcrypt.compareSync(req.body.password, user.password)) {
+        return res.status(401).json({ error: 'Invalid login credentials' });
+      }
+      if (user._id.toString() === keys.brett || user._id.toString() === keys.kevin) {
+        console.log('wtfff');
+        const userId = { _id: user._id };
+        const token = jwt.sign({ user: userId }, keys.secret, { expiresIn: 28800 });
+        return res.status(200).json({ status: 'success', token });
+      } else {
+        throw new Error('not admin');
+      }
+    }
+    res.status(404).json({ error: 'no user was found' });
+  } catch(e) {
+    res.status(500).json({ error: 'login error' });
+  }
+};

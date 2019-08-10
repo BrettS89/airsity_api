@@ -1,18 +1,20 @@
 const Song = require('../models/Song');
 const spotifyService = require('../utils/spotify');
 const awsService = require('../services/aws');
+const authService = require('../services/authService');
 
 exports.addSongs = async (req, res) => {
   try {
+    const resp = await authService.verifyTokenAdmin(req);
+    console.log(resp);
     let songsAdded = 0;
     let offset = 0;
     let size = 1
-    
+
     for (let i = 0; i <= size; i++) {
       const access_token = await spotifyService.getAccessToken();
       const playlist = await spotifyService.getPlaylist(access_token, req.body.playlist, offset);
       if (playlist.length === 100) size += 1;
-      console.log(playlist);
       const added = await Promise.all(playlist.map(async t => {
         const existingSongs = await Song.find({ genre: req.body.genre }).where('spotifyId').equals(t.track.id).exec();
         if (t.track.preview_url && existingSongs.length === 0) {
@@ -49,9 +51,8 @@ exports.addSongs = async (req, res) => {
 
     res.status(200).json({ songsAdded });
   }
-
   catch(e) {
-    console.log(e);
-    res.status(500).json({ error: 'an error occured' });
+    console.log('add songs controller error', e);
+    res.status(500).json({ error: e.message });
   }
 };

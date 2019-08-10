@@ -106,16 +106,28 @@ exports.isLoggedIn = async (req, res) => {
   }
 };
 
+exports.setPushToken = async (req, res) => {
+  try {
+    console.log(req.body);
+    const { user, token } = await auth.verifyToken(req);
+    const foundUser = await User.findById(user._id);
+    foundUser.pushToken = req.body.token;
+    await foundUser.save();
+    res.status(200).json({ message: 'push token saved' });
+  } catch(e) {
+    res.status(500).json({ error: 'an error occured' });
+    console.log('setPushTokenError', e);
+  }
+};
+
 exports.adminLogin = async (req, res) => {
   try {
     const user = await User.findOne({ email: req.body.email });
-    console.log(user);
     if(user) {
       if (!bcrypt.compareSync(req.body.password, user.password)) {
         return res.status(401).json({ error: 'Invalid login credentials' });
       }
       if (user._id.toString() === keys.brett || user._id.toString() === keys.kevin) {
-        console.log('wtfff');
         const userId = { _id: user._id };
         const token = jwt.sign({ user: userId }, keys.secret, { expiresIn: 28800 });
         return res.status(200).json({ status: 'success', token });

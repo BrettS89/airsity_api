@@ -33,9 +33,10 @@ exports.verifyToken = async (req) => {
 exports.verifyTokenAdmin = async (req) => {
   const receivedToken = req.header('authorization');
   if(!receivedToken)
-    throw { error: 'Unauthorized', status: 401 }; 
+    throw { error: 'Unauthorized', status: 401 };
 
   await jwt.verify(receivedToken, keys.secret);
+  
   const decodedUser = jwt.decode(receivedToken);
 
   if(decodedUser === null)

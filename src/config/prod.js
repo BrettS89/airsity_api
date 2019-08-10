@@ -5,4 +5,11 @@ module.exports = {
   environment: process.env.ENVIRONMENT,
   twilioAccountSid: process.env.TWILIO_ACCOUNT_SID,
   twilioAuthToken: process.env.TWILIO_AUTH_TOKEN,
+  kevin: process.env.KEVIN,
+  brett: process.env.BRETT,
+  spotifyClientId: process.env.SPOTIFY_CLIENT_ID,
+  spofityClientSecret: process.env.SPOTIFY_CLIENT_SECRET,
+  accessKeyId: process.env.ACCESS_KEY_ID,
+  secretAccessKey: process.env.SECRET_ACCESS_KEY,
+  Bucket: process.env.BUCKET,
 };

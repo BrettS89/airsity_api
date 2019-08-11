@@ -1,12 +1,14 @@
 const Song = require('../models/Song');
+const User = require('../models/User');
 const spotifyService = require('../utils/spotify');
 const awsService = require('../services/aws');
 const authService = require('../services/authService');
+const { Expo } = require('expo-server-sdk');
+let expo = new Expo();
 
 exports.addSongs = async (req, res) => {
   try {
-    const resp = await authService.verifyTokenAdmin(req);
-    console.log(resp);
+    await authService.verifyTokenAdmin(req);
     let songsAdded = 0;
     let offset = 0;
     let size = 1
@@ -54,5 +56,42 @@ exports.addSongs = async (req, res) => {
   catch(e) {
     console.log('add songs controller error', e);
     res.status(500).json({ error: e.message });
+  }
+};
+
+exports.sendPushNotifications = async (req, res) => {
+  try {
+    await authService.verifyTokenAdmin(req);
+    let date = Date.now();
+
+    while (true) {
+      const foundUsers = await User.find({ 
+        pushToken: { $exists: true },
+        date: { $lt: date },
+      })
+        .sort({ date: 'desc' })
+        .limit(50)
+        .exec();
+      console.log(foundUsers);
+      if (foundUsers.length === 0) break;
+      const messages = foundUsers.map(u => {
+        return {
+          to: u.pushToken,
+          sound: 'default',
+          body: req.body.message,
+        };
+      });
+
+      let chunks = expo.chunkPushNotifications(messages);
+
+      for (let chunk of chunks) {
+        await expo.sendPushNotificationsAsync(chunk);
+      }
+      date = foundUsers[foundUsers.length - 1].date;
+    }
+    res.status(200).json({ message: 'push notifications sent' });
+  } catch(e) {
+    res.status(500).json({ error: e.message });
+    console.log('sendSMS error', e);
   }
 };

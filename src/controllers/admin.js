@@ -1,7 +1,10 @@
 const Song = require('../models/Song');
+const User = require('../models/User');
 const spotifyService = require('../utils/spotify');
 const awsService = require('../services/aws');
 const authService = require('../services/authService');
+const { Expo } = require('expo-server-sdk');
+let expo = new Expo();
 
 exports.addSongs = async (req, res) => {
   try {
@@ -58,7 +61,7 @@ exports.addSongs = async (req, res) => {
 
 exports.sendPushNotifications = async (req, res) => {
   try {
-    // await authService.verifyTokenAdmin(req);
+    await authService.verifyTokenAdmin(req);
     let date = Date.now();
 
     while (true) {
@@ -69,7 +72,7 @@ exports.sendPushNotifications = async (req, res) => {
         .sort({ date: 'desc' })
         .limit(50)
         .exec();
-
+      console.log(foundUsers);
       if (foundUsers.length === 0) break;
       const messages = foundUsers.map(u => {
         return {
@@ -88,7 +91,7 @@ exports.sendPushNotifications = async (req, res) => {
     }
     res.status(200).json({ message: 'push notifications sent' });
   } catch(e) {
-    res.status(500).json({ error: 'an error occured' });
+    res.status(500).json({ error: e.message });
     console.log('sendSMS error', e);
   }
 };

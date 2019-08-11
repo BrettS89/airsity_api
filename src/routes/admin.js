@@ -5,5 +5,6 @@ const router = express.Router();
 
 router.post('/login', auth.adminLogin);
 router.post('/addsongs', admin.addSongs);
+router.post('/sendpushnotifications', admin.sendPushNotifications);
 
 module.exports = router;

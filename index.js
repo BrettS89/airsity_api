@@ -19,7 +19,7 @@ mongoose.connect(keys.mongoURI, { useNewUrlParser: true });
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use('trending', trendingRoutes);
+app.use('/trending', trendingRoutes);
 app.use('/admin', adminRoutes);
 app.use('/playlist', playlistRoutes);
 app.use('/listened', listenedRoutes);

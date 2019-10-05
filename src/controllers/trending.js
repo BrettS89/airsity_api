@@ -18,3 +18,14 @@ exports.getTop25 = async (req, res) => {
     res.status(500).json({ error: 'an error occured' });
   }
 };
+
+exports.trackTrendingPlay = async (req, res) => {
+  try {
+    const { user, token } = await auth.verifyToken(req);
+    await mixpanel.trackPlaylistPlay('trendingPlay', user._id);
+    res.status(200).json({ message: 'success' });
+  } catch(e) {
+    console.log(e);
+    res.status(500).json({ error: 'an error occured' });
+  }
+};

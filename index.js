@@ -8,6 +8,8 @@ const authRoutes = require('./src/routes/auth');
 const songRoutes = require('./src/routes/songs');
 const listenedRoutes = require('./src/routes/listened');
 const playlistRoutes = require('./src/routes/playlist');
+const adminRoutes = require('./src/routes/admin');
+const trendingRoutes = require('./src/routes/trending');
 
 const app = express();
 app.use(cors())
@@ -17,6 +19,8 @@ mongoose.connect(keys.mongoURI, { useNewUrlParser: true });
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+app.use('/trending', trendingRoutes);
+app.use('/admin', adminRoutes);
 app.use('/playlist', playlistRoutes);
 app.use('/listened', listenedRoutes);
 app.use('/songs', songRoutes);

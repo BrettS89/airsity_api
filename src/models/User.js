@@ -6,6 +6,8 @@ const userSchema = new mongoose.Schema({
   isoDate: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
+  pushToken: { type: String },
+  streamingService: { type: String, default: 'none' },
 });
 
 module.exports = mongoose.model('User', userSchema);

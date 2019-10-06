@@ -5,6 +5,7 @@ const User = require('../models/User');
 const auth = require('../services/authService');
 const mixpanel = require('../services/mixpanel');
 const twilio = require('../services/twilio');
+const signupService = require('../services2/auth/signup');
 
 exports.signup = async (req, res) => {
   try {
@@ -22,10 +23,11 @@ exports.signup = async (req, res) => {
     res.status(200).json({ status: 'success', token });
     twilio.signupSMS(firstName);
     mixpanel.track('signup', savedUser._id);
+    signupService.addUserToMailchimp(email, firstName);
   }
 
   catch(e) {
-    console.log(e);
+    console.log('yo bruh', e);
     res.status(500).json({ error: 'an error occured' });
   }
 };

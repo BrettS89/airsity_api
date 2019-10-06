@@ -70,6 +70,7 @@ exports.facebookAuth = async (req, res) => {
       res.status(200).json({ status: 'success', token, streamingService: savedUser.streamingService });
       twilio.signupSMS(name.split(' ')[0]);
       mixpanel.track('facebookSignup', savedUser._id);
+      signupService.addUserToMailchimp(email, name.split(' ')[0]);
     }
   }
 

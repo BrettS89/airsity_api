@@ -12,4 +12,7 @@ module.exports = {
   accessKeyId: process.env.ACCESS_KEY_ID,
   secretAccessKey: process.env.SECRET_ACCESS_KEY,
   Bucket: process.env.BUCKET,
+  mailchimpURI: process.env.MAILCHIMP_URI,
+  mailchimpApiKey: process.env.MAILCHIMP_API_KEY,
+  mailchimpListId: process.env.MAILCHIMP_LIST_ID,
 };

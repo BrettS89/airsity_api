@@ -74,3 +74,31 @@ exports.play = async (req, res) => {
     mixpanel.trackPlaylistPlay('playlistPlay', req.params.genre, user._id);
   }
 };
+
+exports.play2 = async (req, res) => {
+  try {
+    const { user, token } = await auth.verifyToken(req);
+    const playlist = await Playlist.findById(req.body.id);
+    playlist.plays += 1;
+    await playlist.save();
+    mixpanel.trackPlaylistPlay('playlistPlay', req.body.genre, user._id);
+    res.status(200).json({ message: 'success' });
+  } catch(e) {
+    console.log('trackPlay error: ', e);
+    res.status(500).json({ error: 'an error occured' });
+  }
+};
+
+exports.fullPlay = async (req, res) => {
+  try {
+    const { user, token } = await auth.verifyToken(req);
+    const playlist = await Playlist.findById(req.body.id);
+    playlist.fullPlays += 1;
+    await playlist.save();
+    mixpanel.trackPlaylistPlay('fullSong', req.body.genre, user._id);
+    res.status(200).json({ message: 'success' });
+  } catch(e) {
+    console.log('fullTrack error: ', e);
+    res.status(500).json({ error: 'an error occured' });
+  }
+};

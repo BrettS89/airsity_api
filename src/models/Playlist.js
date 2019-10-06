@@ -9,6 +9,8 @@ const playlistSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId, ref: 'User',
     type: String, required: true,
   },
+  plays: { type: Number, default: 0 },
+  fullPlays: { type: Number, default: 0 },
 });
 
 module.exports = mongoose.model('Playlist', playlistSchema);

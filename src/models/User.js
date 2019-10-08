@@ -8,6 +8,8 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
   pushToken: { type: String },
   streamingService: { type: String, default: 'none' },
+  logins: { type: Number, default: 0 },
+  lastLogin: { type: String },
 });
 
 module.exports = mongoose.model('User', userSchema);

@@ -103,6 +103,9 @@ exports.isLoggedIn = async (req, res) => {
     res.status(200).json({ status: true, streamingService });
     mixpanel.track('login', user._id);
     twilio.loginSMS(foundUser);
+    foundUser.logins = founduser.logins + 1 || 1;
+    foundUser.lastLogin = new Date(Date.now()).toISOString();
+    foundUser.save();
   } catch(e) {
     res.status(500).json({ error: 'not authenticated' });
   }

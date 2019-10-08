@@ -1,5 +1,7 @@
 const Song = require('../models/Song');
 const User = require('../models/User');
+const Playlist = require('../models/Playlist');
+const Listen = require('../models/Listened');
 const spotifyService = require('../utils/spotify');
 const awsService = require('../services/aws');
 const authService = require('../services/authService');
@@ -72,7 +74,6 @@ exports.sendPushNotifications = async (req, res) => {
         .sort({ date: 'desc' })
         .limit(50)
         .exec();
-      console.log(foundUsers);
       if (foundUsers.length === 0) break;
       const messages = foundUsers.map(u => {
         return {
@@ -93,5 +94,48 @@ exports.sendPushNotifications = async (req, res) => {
   } catch(e) {
     res.status(500).json({ error: e.message });
     console.log('sendSMS error', e);
+  }
+};
+
+exports.userAnalytics = async (req, res) => {
+  try {
+    await authService.verifyTokenAdmin(req);
+    const activeUsers = await User.find()
+      .sort({ logins: 'desc' })
+      .limit(10)
+      .exec();
+    const inactiveUsers = await User.find({ logins: { $gt: 0, $lt: 3 } })
+      .sort({ logins: 'asc' })
+      .limit(10)
+      .exec();
+
+    const activeUserWithData = await Promise.all(activeUsers.map(async u => {
+      const listens = await Listen.find({ user: u._id }).count();
+      const playlists = await Playlist.find({ user: u._id }).count();
+      const percentage = playlists / listens;
+      return {
+        ...u,
+        listens,
+        playlistsAdds: playlists,
+        percentage,
+      };
+    }));
+
+    const inactiveUsersWithData = await Promise.all(inactiveUsers.map(async u => {
+      const listens = await Listen.find({ user: u._id }).count();
+      const playlists = await Playlist.find({ user: u._id }).count();
+      const percentage = playlists / listens;
+      return {
+        ...u,
+        listens,
+        playlistsAdds: playlists,
+        percentage,
+      };
+    }));
+
+    const data = { active: activeUserWithData, inactive: inactiveUsersWithData };
+    res.status(200).json({ data });
+  } catch(e) {
+    res.status(500).json({ error: e.message });
   }
 };

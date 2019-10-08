@@ -105,7 +105,7 @@ exports.isLoggedIn = async (req, res) => {
     twilio.loginSMS(foundUser);
     foundUser.logins = founduser.logins + 1 || 1;
     foundUser.lastLogin = new Date(Date.now()).toISOString();
-    foundUser.save();
+    await foundUser.save();
   } catch(e) {
     res.status(500).json({ error: 'not authenticated' });
   }

@@ -103,10 +103,12 @@ exports.userAnalytics = async (req, res) => {
     const activeUsers = await User.find()
       .sort({ logins: 'desc' })
       .limit(10)
+      .lean()
       .exec();
     const inactiveUsers = await User.find({ logins: { $gt: 0, $lt: 3 } })
       .sort({ logins: 'asc' })
       .limit(10)
+      .lean()
       .exec();
 
     const activeUserWithData = await Promise.all(activeUsers.map(async u => {

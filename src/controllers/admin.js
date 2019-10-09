@@ -5,6 +5,7 @@ const Listen = require('../models/Listened');
 const spotifyService = require('../utils/spotify');
 const awsService = require('../services/aws');
 const authService = require('../services/authService');
+const userAnalyticsService = require('../services2/admin/userAnalytics');
 const { Expo } = require('expo-server-sdk');
 let expo = new Expo();
 
@@ -102,7 +103,7 @@ exports.userAnalytics = async (req, res) => {
     await authService.verifyTokenAdmin(req);
     const activeUsers = await User.find()
       .sort({ logins: 'desc' })
-      .limit(10)
+      .limit(1000)
       .lean()
       .exec();
     const inactiveUsers = await User.find({ logins: { $gt: 0, $lt: 3 } })
@@ -115,11 +116,19 @@ exports.userAnalytics = async (req, res) => {
       const listens = await Listen.find({ user: u._id }).count();
       const playlists = await Playlist.find({ user: u._id }).count();
       const percentage = playlists / listens;
+      const hiphopListens = await userAnalyticsService.getGenreListensCount(u._id, 'hiphop');
+      const popListens = await userAnalyticsService.getGenreListensCount(u._id, 'pop');
+      const edmListens = await userAnalyticsService.getGenreListensCount(u._id, 'edm');
+      const rnbListens = await userAnalyticsService.getGenreListensCount(u._id, 'rnb');
       return {
         ...u,
         listens,
         playlistsAdds: playlists,
         percentage,
+        hiphopListenPercentage: hiphopListens / listens,
+        popListenPercentage: popListens / listens,
+        edmListenPercentage: edmListens / listens,
+        rnbListenPercentage: rnbListens / listens,
       };
     }));
 
@@ -127,11 +136,19 @@ exports.userAnalytics = async (req, res) => {
       const listens = await Listen.find({ user: u._id }).count();
       const playlists = await Playlist.find({ user: u._id }).count();
       const percentage = playlists / listens;
+      const hiphopListens = await userAnalyticsService.getGenreListensCount(u._id, 'hiphop');
+      const popListens = await userAnalyticsService.getGenreListensCount(u._id, 'pop');
+      const edmListens = await userAnalyticsService.getGenreListensCount(u._id, 'edm');
+      const rnbListens = await userAnalyticsService.getGenreListensCount(u._id, 'rnb');
       return {
         ...u,
         listens,
         playlistsAdds: playlists,
         percentage,
+        hiphopListenPercentage: hiphopListens / listens,
+        popListenPercentage: popListens / listens,
+        edmListenPercentage: edmListens / listens,
+        rnbListenPercentage: rnbListens / listens,
       };
     }));
 

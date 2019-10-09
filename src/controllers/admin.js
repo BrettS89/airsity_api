@@ -103,12 +103,12 @@ exports.userAnalytics = async (req, res) => {
     await authService.verifyTokenAdmin(req);
     const activeUsers = await User.find()
       .sort({ logins: 'desc' })
-      .limit(1000)
+      .limit(15)
       .lean()
       .exec();
     const inactiveUsers = await User.find({ logins: { $gt: 0, $lt: 3 } })
       .sort({ logins: 'asc' })
-      .limit(10)
+      .limit(15)
       .lean()
       .exec();
 
